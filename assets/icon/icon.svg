@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Skelm Studio: a chat bubble holding a spark, on the macOS icon grid
+       (an 824px rounded square centred on a 1024px canvas). Rendered to the
+       bundle PNGs by examples/render_icon.rs. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#302B72"/>
+      <stop offset="1" stop-color="#0B0B1D"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C4B5FD"/>
+      <stop offset="0.5" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <clipPath id="tile">
+      <rect x="100" y="100" width="824" height="824" rx="185"/>
+    </clipPath>
+  </defs>
+
+  <!-- the tile -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#shadow)"/>
+  <g clip-path="url(#tile)">
+    <circle cx="512" cy="470" r="330" fill="url(#glow)"/>
+    <rect x="100" y="100" width="824" height="824" fill="url(#sheen)"/>
+  </g>
+  <rect x="101.5" y="101.5" width="821" height="821" rx="183.5" fill="none"
+        stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="3"/>
+
+  <!-- the chat bubble -->
+  <path d="M 372 262 H 652 A 110 110 0 0 1 762 372 V 572 A 110 110 0 0 1 652 682
+           H 462 L 334 774 L 372 682 A 110 110 0 0 1 262 572 V 372
+           A 110 110 0 0 1 372 262 Z"
+        fill="#FFFFFF" fill-opacity="0.05"
+        stroke="url(#accent)" stroke-width="40" stroke-linejoin="round"/>
+
+  <!-- the spark -->
+  <path d="M 512 335 Q 524 460 649 472 Q 524 484 512 609 Q 500 484 375 472 Q 500 460 512 335 Z"
+        fill="url(#accent)"/>
+  <path d="M 646 318 Q 650 360 692 364 Q 650 368 646 410 Q 642 368 600 364 Q 642 360 646 318 Z"
+        fill="#E0E7FF" fill-opacity="0.9"/>
+</svg>

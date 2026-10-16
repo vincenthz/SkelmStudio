@@ -1,0 +1,103 @@
+[package]
+name = "skelm-studio"
+version = "0.1.0"
+edition = "2024"
+authors = ["Vincent Hanquez <vincent@coretype.io>"]
+description = "A desktop studio for local LLMs, built on skelm-core and GPUI"
+license = "MIT OR Apache-2.0"
+rust-version = "1.85.0"
+
+[[bin]]
+name = "skelm-studio"
+path = "src/main.rs"
+
+# `cargo bundle --release`: target/release/bundle/osx/Skelm Studio.app
+# (or a .deb on Linux)
+[package.metadata.bundle]
+name = "Skelm Studio"
+identifier = "io.coretype.skelm-studio"
+icon = [
+    "assets/icon/16x16.png",
+    "assets/icon/16x16@2x.png",
+    "assets/icon/32x32.png",
+    "assets/icon/32x32@2x.png",
+    "assets/icon/128x128.png",
+    "assets/icon/128x128@2x.png",
+    "assets/icon/256x256.png",
+    "assets/icon/256x256@2x.png",
+    "assets/icon/512x512.png",
+    "assets/icon/512x512@2x.png",
+]
+category = "public.app-category.developer-tools"
+short_description = "Find, download and chat with local LLMs"
+long_description = """
+A desktop studio for local LLMs, built on skelm-core (llama.cpp): browse and
+download GGUF models from Hugging Face and Ollama, chat with rich rendering,
+organise chats in projects, and serve an OpenAI-compatible API.
+"""
+copyright = "Copyright © 2026 Vincent Hanquez"
+osx_minimum_system_version = "12.0"
+
+[dependencies]
+# skelm-core, from git (the commit is pinned in Cargo.lock)
+skelm-api = { git = "https://github.com/vincenthz/skelm-core" }
+skelm-download = { git = "https://github.com/vincenthz/skelm-core" }
+skelm-exec = { git = "https://github.com/vincenthz/skelm-core" }
+skelm-hf = { git = "https://github.com/vincenthz/skelm-core" }
+skelm-llama-cpp = { git = "https://github.com/vincenthz/skelm-core" }
+skelm-ollama = { git = "https://github.com/vincenthz/skelm-core" }
+
+# GPUI Component 0.7.1 is built on the published `gpui-pre` fork of Zed's
+# GPUI; pin the exact GPUI release it was built against.
+gpui = { package = "gpui-pre", version = "=0.3.8" }
+# `font-kit` is the macOS text system: without it no text is drawn
+gpui_platform = { package = "gpui-pre-platform", version = "=0.3.8", features = ["font-kit"] }
+gpui-component = { version = "0.7.1", features = [
+    # syntax highlighting of the code blocks in rendered markdown
+    "tree-sitter-bash",
+    "tree-sitter-c",
+    "tree-sitter-cpp",
+    "tree-sitter-css",
+    "tree-sitter-diff",
+    "tree-sitter-go",
+    "tree-sitter-html",
+    "tree-sitter-java",
+    "tree-sitter-javascript",
+    "tree-sitter-markdown",
+    "tree-sitter-python",
+    "tree-sitter-rust",
+    "tree-sitter-sql",
+    "tree-sitter-toml",
+    "tree-sitter-tsx",
+    "tree-sitter-typescript",
+    "tree-sitter-yaml",
+] }
+gpui-kit-assets = "0.7.1"
+
+anyhow = "1"
+async-channel = "2"
+axum = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "6"
+reqwest = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+ulid = "1.2"
+image = { version = "0.25", optional = true, default-features = false, features = ["png"] }
+
+[dev-dependencies]
+# renders the app icon (`cargo run --example render_icon`); GPUI's own version
+resvg = { version = "0.46", default-features = false }
+
+[features]
+default = []
+# A scripted walk through the UI saving screenshots of each page, for
+# development: `SKELM_STUDIO_TOUR=dir cargo run --features dev-tour`
+dev-tour = ["dep:image", "gpui_platform/test-support"]
+
+[profile.dev.package."*"]
+# llama.cpp and the renderer are unusable without optimisations
+opt-level = 2
