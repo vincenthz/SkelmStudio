@@ -55,6 +55,10 @@ async fn wait_for(
     Ok(false)
 }
 
+thread_local! {
+    static LAST_FRAME: std::cell::Cell<Option<u64>> = const { std::cell::Cell::new(None) };
+}
+
 fn shot(dir: &PathBuf, name: &str, cx: &mut AsyncWindowContext) -> anyhow::Result<()> {
     cx.update(|window, cx| {
         window.refresh();
@@ -63,6 +67,17 @@ fn shot(dir: &PathBuf, name: &str, cx: &mut AsyncWindowContext) -> anyhow::Resul
         let path = dir.join(format!("{name}.png"));
         image.save(&path)?;
         eprintln!("tour: saved {}", path.display());
+        // macOS stops drawing while the display sleeps or the screen is
+        // locked, leaving the last frame in every screenshot
+        let hash = {
+            use std::hash::{Hash, Hasher};
+            let mut h = std::collections::hash_map::DefaultHasher::new();
+            image.as_raw().hash(&mut h);
+            h.finish()
+        };
+        if LAST_FRAME.replace(Some(hash)) == Some(hash) {
+            eprintln!("tour: warning: {name} is the same frame as the last one (display asleep or screen locked?)");
+        }
         anyhow::Ok(())
     })?
 }
@@ -109,6 +124,24 @@ async fn tour(
     wait_for(&studio, cx, 180, |s| s.generation.is_none()).await?;
     wait(cx, 800).await;
     shot(&dir, "04-chat-reply", cx)?;
+
+    // copying the chat puts its Markdown on the clipboard (restored after)
+    let copied = studio.update_in(cx, |s, window, cx| {
+        let previous = cx.read_from_clipboard();
+        let id = s.active_chat.clone().unwrap_or_default();
+        s.copy_chat(&id, window, cx);
+        let copied = cx.read_from_clipboard().and_then(|c| c.text());
+        if let Some(previous) = previous {
+            cx.write_to_clipboard(previous);
+        }
+        copied
+    })?;
+    match copied {
+        Some(text) if text.contains("## You") && text.contains("planets") => {
+            eprintln!("tour: copied the chat ({} bytes)", text.len())
+        }
+        other => anyhow::bail!("copying the chat gave {other:?}"),
+    }
 
     studio.update_in(cx, |s, window, cx| {
         s.set_page(Page::Models, window, cx);

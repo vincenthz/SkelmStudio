@@ -13,6 +13,7 @@ gpui_kit_assets::icon_assets!(
         Box,
         Brain,
         CircleStop,
+        ClipboardCopy,
         Clock,
         CodeXml,
         Download,

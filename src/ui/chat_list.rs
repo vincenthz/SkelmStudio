@@ -356,6 +356,13 @@ impl Studio {
                                             })),
                                     )
                                     .item(
+                                        PopupMenuItem::new("Copy as Text")
+                                            .icon(Lucide::ClipboardCopy)
+                                            .on_click(action(&w, &id, |this, id, window, cx| {
+                                                this.copy_chat(id, window, cx)
+                                            })),
+                                    )
+                                    .item(
                                         PopupMenuItem::new("Export as Markdown")
                                             .icon(Lucide::Upload)
                                             .on_click(action(&w, &id, |this, id, window, cx| {

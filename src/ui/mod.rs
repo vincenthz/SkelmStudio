@@ -988,6 +988,14 @@ impl Studio {
         self.select_chat(new_id, window, cx);
     }
 
+    /// Copy the whole conversation as Markdown (the text of the export)
+    pub fn copy_chat(&mut self, id: &str, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(chat) = self.chat(id) {
+            let markdown = conversation::to_markdown(chat);
+            self.copy(markdown, window, cx);
+        }
+    }
+
     pub fn export_chat(&mut self, id: &str, window: &mut Window, cx: &mut Context<Self>) {
         let Some(chat) = self.chat(id) else {
             return;

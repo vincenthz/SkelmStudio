@@ -82,7 +82,18 @@ impl Studio {
             })
             .child(div().flex_1().min_w_0().truncate().text_sm().font_medium().child(title))
             .when_some(chat_id.clone(), |d, id| {
+                let copy_id = id.clone();
                 d.child(
+                    Button::new("copy-chat")
+                        .ghost()
+                        .small()
+                        .icon(IconName::Copy)
+                        .tooltip("Copy chat as text")
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.copy_chat(&copy_id, window, cx)
+                        })),
+                )
+                .child(
                     Button::new("export")
                         .ghost()
                         .small()
